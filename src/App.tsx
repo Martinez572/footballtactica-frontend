@@ -1,26 +1,48 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Players from './pages/Players';
+import Tactics from './pages/Tactics';
+import Plays from './pages/Plays';
+import Reports from './pages/Reports';
+import Layout from './components/Layout';
+import TacticalBoard from './pages/TacticalBoard';
 
-function App() {
+const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/" />;
+};
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={
+            <PrivateRoute><Layout><Dashboard /></Layout></PrivateRoute>
+          } />
+          <Route path="/players" element={
+            <PrivateRoute><Layout><Players /></Layout></PrivateRoute>
+          } />
+          <Route path="/tactics" element={
+            <PrivateRoute><Layout><Tactics /></Layout></PrivateRoute>
+          } />
+          <Route path="/plays" element={
+            <PrivateRoute><Layout><Plays /></Layout></PrivateRoute>
+          } />
+          <Route path="/reports" element={
+            <PrivateRoute><Layout><Reports /></Layout></PrivateRoute>
+          } />
+          <Route path="/board" element={
+            <PrivateRoute><Layout><TacticalBoard /></Layout></PrivateRoute>
+          } />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
